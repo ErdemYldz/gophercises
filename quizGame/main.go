@@ -67,7 +67,7 @@ func getRecords(reader *csv.Reader, ch chan bool, outcome *result) {
 		row.question = columns[0]
 		row.answer = strings.TrimSpace(columns[1])
 		userAnswer := askQuestion(row.question)
-		if checkAnswer(row.answer, userAnswer) {
+		if row.answer == userAnswer {
 			outcome.correct++
 		} else {
 			outcome.uncorrect++
@@ -83,13 +83,6 @@ func askQuestion(question string) string {
 	answer := scanner.Text()
 	answer = strings.TrimSpace(answer)
 	return answer
-}
-
-func checkAnswer(answer, userAnswer string) bool {
-	if answer == userAnswer {
-		return true
-	}
-	return false
 }
 
 func printResults(outcome *result) {
