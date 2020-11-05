@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+const printTemplate = `The number of answered questions: %v
+The number of correct answer: %v
+The number of uncorrect answer: %v`
+
 type record struct {
 	question string
 	answer   string
@@ -33,17 +37,18 @@ func main() {
 	defer f.Close()
 	reader := csv.NewReader(f)
 	outcome := result{}
-	ch := make(chan bool)
+	done := make(chan bool)
 	start := time.Now()
-	go getRecords(reader, ch, &outcome)
+	go getRecords(reader, done, &outcome)
 
-	timeIt(*totalTime, ch)
+	timeIt(*totalTime, done)
 	printResults(&outcome)
 	ends := time.Since(start)
 	fmt.Println("it takes ", ends)
 }
 
 func timeIt(t int, ch chan bool) {
+	defer close(ch)
 	select {
 	case <-ch:
 		return
@@ -87,9 +92,7 @@ func askQuestion(question string) string {
 
 func printResults(outcome *result) {
 	fmt.Println()
-	fmt.Printf(`The number of answered questions: %v
-The number of correct answer: %v
-The number of uncorrect answer: %v`,
-		outcome.correct+outcome.uncorrect, outcome.correct, outcome.uncorrect)
+	fmt.Printf(printTemplate, outcome.correct+outcome.uncorrect,
+		outcome.correct, outcome.uncorrect)
 	fmt.Println()
 }
