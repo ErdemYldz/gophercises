@@ -22,12 +22,6 @@ type gomysql struct {
 // if there is no match
 var ErrorNoRecord = errors.New("models: no matching record found")
 
-// Snippet is an object
-type dataModel struct {
-	path string
-	url  string
-}
-
 type config struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -99,11 +93,11 @@ func (m *gomysql) Insert() (int, error) {
 
 // Get returns the spesific snippet we want based on its id
 func (m *gomysql) getData(path string) (string, bool) {
-	stmt := `SELECT path, url FROM dataurl WHERE path = ?`
+	stmt := `SELECT url FROM dataurl WHERE path = ?`
 
 	row := m.DB.QueryRow(stmt, path)
-	s := &dataModel{}
-	err := row.Scan(&s.path, &s.url)
+	var s string
+	err := row.Scan(&s)
 	log.Println("gomysql s: ", s)
 	if err == sql.ErrNoRows {
 		return "", false
@@ -111,5 +105,5 @@ func (m *gomysql) getData(path string) (string, bool) {
 		return "", false
 	}
 
-	return s.url, true
+	return s, true
 }

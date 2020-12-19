@@ -1,0 +1,17 @@
+{{ template "base" . }}
+{{ define "title"}}Home{{end}}
+
+{{ define "body"}}
+<p>{{.Title}}</p>
+{{ range .Paragraphs}}
+<p>{{ . }}</p>
+{{end}}
+{{range $opt := .Options}}
+<ul>
+    <li><a href="/{{$opt.Arc}}">{{ $opt.Text}}</a></li>
+</ul>
+{{end}}
+{{ if not .Options}}
+<p>*****THE END*****</p>
+{{ end }}
+{{end}}
